@@ -1,0 +1,41 @@
+@startuml
+entity User {
+    * id
+    * login
+    * {cipher}password
+    * name
+}
+entity House {
+    * id
+    * name
+      address
+    * user_id
+}
+entity DeviceModule {
+    * id
+    * device_type_id
+    * house_id
+      serial_number
+}
+entity Device_type {
+    * id
+    * name
+      description
+}
+entity Device {
+    * id
+    * device_module_id
+    * status
+     data
+}
+entity Telemetry {
+    * device_id
+    * data
+}
+
+User ||..|{ House
+House ||..o{ DeviceModule
+DeviceModule }o..|| Device_type
+DeviceModule ||..|| Device
+Device ||..o{ Telemetry
+@enduml

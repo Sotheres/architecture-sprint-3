@@ -1,0 +1,81 @@
+asyncapi: 3.0.0
+info:
+  title: Device management Kafka API
+  version: 1.0.0
+  description: API describing device service async operations
+defaultContentType: application/json
+servers:
+  scram-connections:
+    host: kafkacluster:9092
+    protocol: kafka-secure
+channels:
+  deviceCommands:
+    address: device_commands
+    messages:
+      command:
+        $ref: '#/components/messages/command'
+  deviceStatus:
+    address: device_status
+    messages:
+      deviceStatus:
+        $ref: '#/components/messages/deviceStatus'
+operations:
+  receiveCommandToDevice:
+    action: receive
+    channel:
+      $ref: '#/channels/deviceCommands'
+    summary: Receive command to device
+    messages:
+      - $ref: '#/channels/deviceCommands/messages/command'
+  sendDeviceStatus:
+    action: send
+    channel:
+      $ref: '#/channels/deviceStatus'
+    messages:
+      - $ref: '#/channels/deviceStatus/messages/deviceStatus'
+components:
+  messages:
+    command:
+      name: Device command
+      title: Command to execute on device
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/commandPayload'
+    deviceStatus:
+      name: Device status
+      title: Status of device
+      summary: Status and parameters of device
+      payload:
+        $ref: '#/components/schemas/deviceStatusPayload'
+  schemas:
+    commandPayload:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          description: Id of device to manage
+        command:
+          type: string
+          description: Command to execute
+          example: turn_on
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    deviceStatusPayload:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - 'on'
+            - 'off'
+          description: Whether is device is on or off
+        metrics:
+          type: array
+          items:
+            type: string
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.

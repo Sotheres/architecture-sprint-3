@@ -1,3 +1,20 @@
+# Документация
+
+## Диаграммы
+Диаграммы системы лежат в папке /schemas.  
+system_context.puml - описывает диаграмму контекстов, что совпадает с изначальным состоянием монолитной системы.  
+system_containers.puml - описывает диаграмму контейнеров целевой системы. Взаимодействие происходит как в синхронном,
+так и в асинхронном формате.  
+system_components.puml - описывает диаграмму компонентов целевой системы.  
+ER.puml - описывает диаграмму сущностей БД целевой системы.
+
+## Описание API
+Документация на API основных компонентов системы лежит в папке /apis.
+
+## Маршрутизация запросов API Gateway Kusk
+
+Конфиг маршрутизации описан в файле api.yaml в корневом каталоге проекта.
+
 # Базовая настройка
 
 ## Запуск minikube
@@ -15,6 +32,17 @@ minikube start
 
 ```bash
 kubectl create secret docker-registry ghcr --docker-server=https://ghcr.io --docker-username=<github_username> --docker-password=<github_token> -n default
+```
+
+## Установка приложения через Helm
+
+```bash
+cd charts/device-service
+helm dependency build
+
+cd charts/smart-home-app
+helm dependency build
+helm install <app-name> .
 ```
 
 

@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/yandex-practicum/architecture-sprint-3
-  pullPolicy: IfNotPresent
+  repository: ghcr.io/sotheres/smart-home-monolith
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
@@ -14,7 +14,7 @@ imagePullSecrets:
   - name: ghcr
 
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: smart-home-monolith
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -99,11 +99,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-
-postgresql:
-  enabled: true
-  auth:
-    username: your_username
-    password: your_password
-    database: smart_home

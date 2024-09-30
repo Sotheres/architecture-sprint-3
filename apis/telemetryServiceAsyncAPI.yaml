@@ -1,0 +1,44 @@
+asyncapi: 3.0.0
+info:
+  title: Telemetry management Kafka API
+  version: 1.0.0
+  description: API describing telemetry service async operations
+defaultContentType: application/json
+servers:
+  scram-connections:
+    host: mykafkacluster:9092
+    protocol: kafka-secure
+channels:
+  deviceTelemetry:
+    address: device_telemetry
+    messages:
+      telemetry:
+        $ref: '#/components/messages/telemetry'
+operations:
+  receiveTelemetry:
+    action: receive
+    channel:
+      $ref: '#/channels/deviceTelemetry'
+    messages:
+      - $ref: '#/channels/deviceTelemetry/messages/telemetry'
+components:
+  messages:
+    telemetry:
+      name: telemetry
+      title: Device telemetry
+      summary: Current telemetry data of device
+      payload:
+        $ref: '#/components/schemas/telemetryPayload'
+  schemas:
+    telemetryPayload:
+      type: object
+      properties:
+        data:
+          type: string
+          example: '{"deviceId": 123, "temperature": 23.4}'
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.

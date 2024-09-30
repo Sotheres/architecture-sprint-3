@@ -1,0 +1,106 @@
+asyncapi: 3.0.0
+info:
+  title: Home management Kafka API
+  version: 1.0.0
+  description: API describing home service async operations
+defaultContentType: application/json
+servers:
+  scram-connections:
+    host: kafkacluster:9092
+    protocol: kafka-secure
+channels:
+  deviceCommands:
+    address: device_commands
+    messages:
+      command:
+        $ref: '#/components/messages/command'
+  deviceStatus:
+    address: device_statuses
+    messages:
+      deviceStatus:
+        $ref: '#/components/messages/deviceStatus'
+  deviceTelemetry:
+    address: device_telemetry
+    messages:
+      telemetry:
+        $ref: '#/components/messages/telemetry'
+operations:
+  sendCommandToDevice:
+    action: send
+    channel:
+      $ref: '#/channels/deviceCommands'
+    summary: Receive command to device
+    messages:
+      - $ref: '#/channels/deviceCommands/messages/command'
+  receivedDeviceStatus:
+    action: receive
+    channel:
+      $ref: '#/channels/deviceStatus'
+    messages:
+      - $ref: '#/channels/deviceStatus/messages/deviceStatus'
+  sendTelemetry:
+    action: send
+    channel:
+      $ref: '#/channels/deviceTelemetry'
+    messages:
+      - $ref: '#/channels/deviceTelemetry/messages/telemetry'
+components:
+  messages:
+    command:
+      name: Device command
+      title: Command to execute on device
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/commandPayload'
+    deviceStatus:
+      name: Device status
+      title: Status of device
+      summary: Status and parameters of device
+      payload:
+        $ref: '#/components/schemas/deviceStatusPayload'
+    telemetry:
+      name: telemetry
+      title: Device telemetry
+      summary: Current telemetry data of device
+      payload:
+        $ref: '#/components/schemas/telemetryPayload'
+  schemas:
+    commandPayload:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          description: Id of device to manage
+        command:
+          type: string
+          description: Command to execute
+          example: turn_on
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    deviceStatusPayload:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - 'on'
+            - 'off'
+          description: Whether is device is on or off
+        metrics:
+          type: array
+          items:
+            type: string
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    telemetryPayload:
+      type: object
+      properties:
+        data:
+          type: string
+          example: '{"deviceId": 123, "temperature": 23.4}'
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.

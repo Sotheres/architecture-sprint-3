@@ -1,0 +1,73 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User")
+System_Ext(sensors, "Sensors")
+System_Ext(devices, "Devices")
+System_Boundary(system, "SmartHome") {
+    Container(interaction, "User Interaction") {
+        Component(apigw, "API Gateway")
+        Component(webapp, "Web App")
+    }
+    Container(homeMs, "home manager") {
+        Component(homeApi, "API")
+        Component(homeAsyncApi, "asyncAPI")
+        Component(deviceManager, "Device manager")
+        Component(houseManager, "House manager")
+        Component(homeDao, "DAO")
+    }
+    ContainerDb(homeDb, "Home DB", "Postgres")
+
+    Container(userMs, "User manager") {
+        Component(userApi, "API")
+        Component(userManager, "User manager")
+        Component(userDao, "DAO")
+    }
+    ContainerDb(userDb, "User DB", "Postgres")
+
+    Container(deviceMs, "Device manager") {
+        Component(deviceApi, "asyncAPI")
+        Component(deviceCommands, "Command Manager")
+
+    }
+    Container(telemetryMs, "Telemetry manager") {
+        Component(telemetryAsyncApi, "asyncAPI")
+        Component(telemetryApi, "API")
+        Component(telemetryManager, "Telemetry manager")
+        Component(telemetryDao, "DAO")
+    }
+    ContainerDb(telemetryDb, "Telemetry DB")
+
+    Container(kafka, "Broker")
+
+    Rel(user, webapp, "Send requests")
+
+    Rel(webapp, apigw, "Request data")
+    Rel(apigw, homeApi, "Translate")
+    Rel(apigw, userApi, "Translate")
+
+    Rel(homeApi, deviceManager, "Translate")
+    Rel(homeApi, houseManager, "Translate")
+    Rel(deviceManager, homeDao, "Use")
+    Rel(deviceManager, telemetryApi, "Retrieve telemetry")
+    Rel(homeAsyncApi, deviceManager, "Translate")
+    Rel(homeAsyncApi, kafka, "Manage telemetry and devices")
+    Rel(houseManager, homeDao, "Use")
+    Rel(homeDao, homeDb, "Use")
+
+    Rel(userApi, userManager, "Translate")
+    Rel(userManager, userDao, "Use")
+    Rel(userDao, userDb, "Use")
+
+    Rel(telemetryAsyncApi, telemetryManager, "Translate")
+    Rel(telemetryApi, telemetryManager, "Translate")
+    Rel(telemetryManager, telemetryDao, "Use")
+    Rel(telemetryDao, telemetryDb, "Use")
+    Rel(telemetryAsyncApi, kafka, "Receive telemetry")
+
+    Rel(deviceApi, deviceCommands, "Translate")
+    Rel(deviceCommands, sensors, "Retrieve data")
+    Rel(deviceCommands, devices, "Manage")
+    Rel(deviceApi, kafka, "Manage devices")
+}
+@enduml

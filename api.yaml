@@ -1,22 +1,209 @@
 openapi: 3.0.0
 info:
-  title: simple-api
+  title: smart-home-routing
   version: 0.1.0
-
 paths:
-  /hello:
-    get:
+  /api/devices:
+    post:
+      requestBody:
+        description: New device
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceModule'
+        required: true
       responses:
         '200':
-          description: A simple hello world!
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: Hello from a mocked response!
+          description: Device is registered
       x-kusk:
         upstream:
           service:
-            name: hello-world-svc
+            name: device-service
             namespace: default
             port: 8080
+  /api/devices/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Device info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceInfo"
+      x-kusk:
+        upstream:
+          service:
+            name: device-service
+            namespace: default
+            port: 8080
+  /api/devices/{id}/command:
+    post:
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Command to device
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCommand'
+        required: true
+      responses:
+        '200':
+          description: Command is send
+      x-kusk:
+        upstream:
+          service:
+            name: device-service
+            namespace: default
+            port: 8080
+  /api/devices/{id}/current-temperature:
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Current temperature
+          schema:
+            type: number
+      x-kusk:
+        upstream:
+          service:
+            name: device-service
+            namespace: default
+            port: 8080
+  /api/devices/telemetry:
+    get:
+      responses:
+        '200':
+          description: Telemetry array
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Telemetry"
+      x-kusk:
+        upstream:
+          service:
+            name: device-service
+            namespace: default
+            port: 8080
+  /api/heating/{id}/change-status:
+    put:
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: New device status
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceStatus'
+        required: true
+      responses:
+        '200':
+          description: Status changed
+      x-kusk:
+        upstream:
+          service:
+            name: smart-home-monolith
+            namespace: default
+            port: 8080
+  /api/telemetry:
+    post:
+      requestBody:
+        description: Telemetry data
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Telemetry'
+        required: true
+      responses:
+        '200':
+          description: Telemetry is send
+      x-kusk:
+        upstream:
+          service:
+            name: telemetry-service
+            namespace: default
+            port: 8080
+components:
+  schemas:
+    DeviceModule:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Boris
+        description:
+          type: string
+          example: the Blade
+        serialNumber:
+          type: string
+          example: asdklj
+    DeviceInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        isOn:
+          type: boolean
+          example: false
+        target temperature:
+          type: number
+          example: 22.1
+        current temperature:
+          type: number
+          example: 25.2
+        device module id:
+          type: integer
+          example: 1
+    DeviceStatus:
+      properties:
+        isOn:
+          type: boolean
+          example: false
+    DeviceCommand:
+      properties:
+        DeviceCommandTypes:
+          type: string
+          example: set_temperature
+        value:
+          type: number
+          example: 23
+    Telemetry:
+      properties:
+        id:
+          type: integer
+          example: 1
+        deviceId:
+          type: integer
+          example: 1
+        current temperature:
+          type: number
+          example: 25.6

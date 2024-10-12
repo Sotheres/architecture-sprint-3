@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: Telemetry manager API
+  description: API for managing telemetry
+  version: 1.0.0
+tags:
+  - name: Telemetry
+    description: Telemetry management operations
+paths:
+  /device/{id}/telemetry:
+    get:
+      tags:
+        - Telemetry
+      summary: Get long term telemetry
+      operationId: getTelemetry
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Telemetry'
+        '404':
+          description: Device not found
+        '500':
+          description: Server exception
+  /device/{id}/telemetry/latest:
+    get:
+      tags:
+        - Telemetry
+      summary: Get latest telemetry
+      operationId: getLatestTelemetry
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Telemetry'
+        '404':
+          description: Device not found
+        '500':
+          description: Server exception
+components:
+  schemas:
+    Telemetry:
+      type: object
+      properties:
+        data:
+          type: string
+          example: {"deviceId": 123, "temperature": 23.4}

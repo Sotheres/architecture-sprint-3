@@ -1,0 +1,373 @@
+openapi: 3.0.3
+info:
+  title: Home manager API
+  description: API for managing houses and devices
+  version: 1.0.0
+tags:
+  - name: House
+    description: House management operations
+  - name: Device
+    description: Device management operations
+paths:
+  /house:
+    post:
+      tags:
+        - House
+      summary: Register new house
+      operationId: registerHouse
+      requestBody:
+        description: New house registration info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/House'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'House successfully registered'
+        '422':
+          description: Validation exception
+        '500':
+          description: Server exception
+    get:
+      tags:
+        - House
+      summary: Get house list
+      operationId: getHouseList
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/House'
+        '500':
+          description: Server exception
+  /house/{id}:
+    get:
+      tags:
+        - House
+      summary: Get house info
+      operationId: getHouse
+      parameters:
+        - in: path
+          name: id
+          description: House id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/House'
+        '422':
+          description: Validation exception
+        '500':
+          description: Server exception
+    put:
+      tags:
+        - House
+      summary: Update house info
+      operationId: updateHouse
+      parameters:
+        - in: path
+          name: id
+          description: House id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        description: Update house properties
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/House'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'House successfully updated'
+        '422':
+          description: Validation exception
+        '500':
+          description: Server exception
+    delete:
+      tags:
+        - House
+      summary: Remove house
+      operationId: removeHouse
+      parameters:
+        - in: path
+          name: id
+          description: House id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'House successfully removed'
+        '500':
+          description: Server exception
+  /device:
+    post:
+      tags:
+        - Device
+      summary: Register new device
+      operationId: registerDevice
+      requestBody:
+        description: New device registration info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'Device successfully registred'
+        '404':
+          description: House not found
+        '422':
+          description: Validation exception
+        '500':
+          description: Server exception
+    get:
+      tags:
+        - Device
+      summary: Get device list
+      operationId: deviceList
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/House'
+        '404':
+          description: House not found
+        '500':
+          description: Server exception
+  /device/{id}:
+    get:
+      tags:
+        - Device
+      summary: Get device info
+      operationId: getDevice
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          description: Device not found
+        '500':
+          description: Server exception
+    put:
+      tags:
+        - Device
+      summary: Update device
+      operationId: updateDevice
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Device update info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'Device successfully updated'
+        '404':
+          description: Device not found
+        '422':
+          description: Validation exception
+        '500':
+          description: Server exception
+    delete:
+      tags:
+        - Device
+      summary: Remove device
+      operationId: removeDevice
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'Device successfully removed'
+        '404':
+          description: Device not found
+        '500':
+          description: Server exception
+  /device/{id}/manage:
+    post:
+      tags:
+        - Device
+      summary: Send command to device
+      operationId: manageDevice
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Device update info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Command'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'Command successfully send'
+        '404':
+          description: Device not found
+        '500':
+          description: Server exception
+  /device/{id}/telemetry:
+    get:
+      tags:
+        - Device
+      summary: Get device telemetry for last period
+      operationId: deviceTelemetry
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Telemetry'
+        '404':
+          description: Device not found
+        '500':
+          description: Server exception
+  /device/{id}/telemetry/latest:
+    get:
+      tags:
+        - Device
+      summary: Get latest device telemetry
+      operationId: latestDeviceTelemetry
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Telemetry'
+        '404':
+          description: Device not found
+        '500':
+          description: Server exception
+components:
+  schemas:
+    House:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: My house
+        address:
+          type: string
+          example: 100 Nevsky ave
+    Device:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Temperature sensor
+        description:
+          type: string
+          example: Super useful device
+        serial number:
+          type: string
+          example: abc123
+    Command:
+      type: object
+      required:
+        - operation
+      properties:
+        operation:
+          type: string
+          example: turn_on
+    Telemetry:
+      type: object
+      properties:
+        data:
+          type: string
+          example: something

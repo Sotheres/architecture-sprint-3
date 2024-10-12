@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: User manager API
+  description: API for managing user
+  version: 1.0.0
+tags:
+  - name: User
+    description: User management operations
+paths:
+  /user:
+    post:
+      tags:
+        - User
+      summary: Register new user
+      operationId: registerUser
+      requestBody:
+        description: New user registration info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'User successfully registered'
+        '422':
+          description: Validation exception
+        '500':
+          description: Server exception
+  /user/{id}:
+    get:
+      tags:
+        - User
+      summary: Get user info
+      operationId: getUser
+      parameters:
+        - in: path
+          name: id
+          description: User id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Server exception
+    put:
+      tags:
+        - User
+      summary: Update user info
+      operationId: updateUser
+      parameters:
+        - in: path
+          name: id
+          description: User id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        description: User update info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: 'User successfully updated'
+        '404':
+          description: User not found
+        '422':
+          description: Validation exception
+        '500':
+          description: Server exception
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - login
+        - password
+      properties:
+        name:
+          type: string
+          example: Boris
+        login:
+          type: string
+          example: username
+        password:
+          type: string
+          example: qwerty123

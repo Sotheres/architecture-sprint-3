@@ -1,0 +1,36 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User")
+System_Boundary(c1, "SmartHome") {
+    Container(apigw, "API Gateway")
+    Container(homeMs, "Home manager")
+    Container(userMs, "User manager")
+    Container(deviceMs, "Device manager")
+    Container(telemetryMs, "Telemetry manager")
+
+    ContainerDb(homeDb, "Home DB")
+    ContainerDb(userDb, "User DB")
+    ContainerDb(telemetryDb, "Telemetry DB")
+
+    Container(kafka, "Broker")
+}
+System_Ext(devices, "Devices")
+System_Ext(sensors, "Sensors")
+
+Rel(user, apigw, "Manage home")
+Rel(apigw, homeMs, "Manage home")
+Rel(apigw, userMs, "Manage users")
+Rel(homeMs, kafka, "Manage telemetry and devices")
+Rel_L(homeMs, telemetryMs, "Get telemetry")
+Rel(deviceMs, kafka, "Manage devices")
+Rel(telemetryMs, kafka, "Receive telemetry")
+
+Rel(homeMs, homeDb, "Use")
+Rel(userMs, userDb, "Use")
+Rel(telemetryMs, telemetryDb, "Use")
+
+Rel(deviceMs, sensors, "Retrieve data")
+Rel(deviceMs, devices, "Manage devices")
+
+@enduml
